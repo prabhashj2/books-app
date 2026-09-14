@@ -2,48 +2,38 @@ import {useState} from 'react';
 import {Owner} from './types';
 import {fetchBookData} from './services/api';
 import {processBooks} from './utils/processBooks';
+import {mockOwners} from './mockData';
 import './App.css';
 
 export default function App(){
     const [owners, setOwners] = useState<Owner[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
+    const [usingMockData, setUsingMockData] = useState<boolean>(false);
     const [hardcoverOnly, setHardcoverOnly] = useState<boolean>(false);
     const [dataFetched, setDataFetched] = useState<boolean>(false);
 
 const handleGetData = async () => {
     setLoading(true);
     setError(null);
+    setUsingMockData(false);
     try {
       let data: Owner[] | undefined;
+      let fellBackToMockData = false;
       try {
         data = await fetchBookData();
       } catch (e) {
-        console.warn("API unreachable, falling back to mock data.");
+        console.warn("API unreachable, falling back to sample data.", e);
+        fellBackToMockData = true;
       }
 
-      // Fallback mock data so your UI renders immediately for testing
       if (!data || !Array.isArray(data)) {
-        data = [
-          {
-            name: "John Smith",
-            age: 30,
-            books: [
-              { name: "Clean Code", type: "Hardcover" },
-              { name: "JavaScript Guide", type: "Paperback" }
-            ]
-          },
-          {
-            name: "Tommy Smith",
-            age: 12,
-            books: [
-              { name: "Adventure Island", type: "Hardcover" }
-            ]
-          }
-        ];
+        data = mockOwners;
+        fellBackToMockData = true;
       }
 
       setOwners(data);
+      setUsingMockData(fellBackToMockData);
       setDataFetched(true);
     } catch (err) {
       setError('Failed to load book data.');
@@ -75,6 +65,11 @@ const handleGetData = async () => {
             </div>
 
             {error && <div className="error-message">{error}</div>}
+            {usingMockData && (
+                <div className="notice-message">
+                    Showing sample data — the live API is unavailable right now.
+                </div>
+            )}
 
             {dataFetched && (
                 <div className="results-grid">

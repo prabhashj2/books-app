@@ -106,7 +106,7 @@ describe('App', () => {
         await screen.findByRole('button', { name: 'Get Books' });
     });
 
-    it('falls back to mock data when the API is unreachable, without surfacing an error', async () => {
+    it('falls back to sample data and visibly flags it when the API is unreachable', async () => {
         const user = userEvent.setup();
         mockFetchRejecting();
 
@@ -115,6 +115,22 @@ describe('App', () => {
 
         expect(await screen.findByText('Clean Code')).toBeInTheDocument();
         expect(screen.getAllByText('(John Smith)').length).toBeGreaterThan(0);
+        expect(
+            screen.getByText('Showing sample data — the live API is unavailable right now.')
+        ).toBeInTheDocument();
         expect(screen.queryByText('Failed to load book data.')).not.toBeInTheDocument();
+    });
+
+    it('does not show the sample-data notice when the real API succeeds', async () => {
+        const user = userEvent.setup();
+        mockFetchResolvedWith([{ name: 'Real Owner', age: 40, books: [] }]);
+
+        render(<App />);
+        await user.click(screen.getByRole('button', { name: 'Get Books' }));
+
+        await screen.findByRole('heading', { name: 'Books owned by Adults' });
+        expect(
+            screen.queryByText('Showing sample data — the live API is unavailable right now.')
+        ).not.toBeInTheDocument();
     });
 });

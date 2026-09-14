@@ -69,6 +69,26 @@ body{
     padding-bottom: 0px;
 }
 
+.error-message{
+    background: #fdecea;
+    color: #a12622;
+    border: 1px solid #f2b8b5;
+    padding: 10px 16px;
+    border-radius: 4px;
+    text-align: center;
+    margin-bottom: 16px;
+}
+
+.notice-message{
+    background: #fff4e5;
+    color: #8a5a00;
+    border: 1px solid #f0c987;
+    padding: 10px 16px;
+    border-radius: 4px;
+    text-align: center;
+    margin-bottom: 16px;
+}
+
 /* Mobile breakpoint (<600px) */
 @media (max-width: 600px) {
     .results-grid{

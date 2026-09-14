@@ -58,13 +58,15 @@ describe('processBooks', () => {
     });
 
     it('is case-insensitive when matching the hardcover type', () => {
-        const mixedCaseOwners: Owner[] = [
+        // The API response is untyped JSON at runtime, so casing isn't guaranteed
+        // to match the `BookType` union even though our own code always produces it.
+        const mixedCaseOwners = [
             {
                 name: 'Case Tester',
                 age: 40,
                 books: [{ name: 'Weird Casing', type: 'HARDcover' }],
             },
-        ];
+        ] as unknown as Owner[];
 
         const result = processBooks(mixedCaseOwners, true, true);
         expect(result).toEqual([{ bookName: 'Weird Casing', ownerName: 'Case Tester' }]);
